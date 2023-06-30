@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    restart: always
+    ports:
+      - 8000:8000
+      - 9443:9443
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer_data:/data
+    command: --http-enabled
+  proxy-manager:
+    container_name: proxy-manager
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+  heimdall:
+    container_name: heimdall
+    image: linuxserver/heimdall
+    ports:
+      - 8080:80
+      - 8443:443
+    volumes:
+      - ./heimdall:/config
+    environment:
+      - PGID=1000
+      - PUID=1000
